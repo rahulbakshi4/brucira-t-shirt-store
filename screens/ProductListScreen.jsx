@@ -1,24 +1,24 @@
 import { useEffect, useState } from 'react';
-import { FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button,Text } from 'react-native-paper';
 import data from '../assets/data.json'
 import { useDispatch, useSelector } from 'react-redux';
-import { getProducts, setProducts } from '../features/productList/productListSlice';
+import { getAllProducts, getProducts, setProducts } from '../features/productList/productListSlice';
 import { ProductCard } from '../components/ProductCard';
+import { CartScreen } from './CartScreen';
+import CartIcon from '../components/CartIcon';
 
 const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL']; // Available sizes
 
 export const ProductListScreen = () => {
   const [selectedSizes, setSelectedSizes] = useState([]); 
+  const [isModalVisible, setModalVisible] = useState(false);
   const {products} = useSelector((store)=>store.productList)
   const dispatch = useDispatch()
 
-useEffect(()=>{
-    dispatch(setProducts(data))
-},[])
 
 useEffect(()=>{
-    dispatch(getProducts())
+    dispatch(getAllProducts())
 },[products])
 
   // Function to handle button press
@@ -29,9 +29,25 @@ useEffect(()=>{
       setSelectedSizes([...selectedSizes, size]); 
     }
   };
-
+  
   return (
     <View style={styles.mainContainer}>
+   <View style={{
+    alignItems: 'flex-end'
+   }}>
+   <Pressable  style={{
+            justifyContent: "center",
+            alignItems: 'center',
+            borderRadius: 28,
+            width: 56,
+            height: 56,
+            margin: 4,
+            backgroundColor:  'black',
+          }}onPress={() => setModalVisible(true)}>
+      <CartIcon/>
+    </Pressable>
+    </View> 
+{isModalVisible && <CartScreen isModalVisible setModalVisible={setModalVisible}/>}
     <Text style={{
         margin: 5,
         fontWeight: 700
@@ -87,6 +103,7 @@ const styles = StyleSheet.create({
     mainContainer: {
   paddingHorizontal: 20,
   paddingVertical: 30,
+  backgroundColor: '#fff',
   flex: 1,
     },
     btnContainer: {
@@ -95,5 +112,15 @@ const styles = StyleSheet.create({
     },
     productList: {
 
+    },
+
+    cartBtn: {
+      flex:1,
+      justifyContent: 'center',
+      alignItems:'center',
+      backgroundColor: 'black',
+      width: 40,
+      height: 40,
+      borderRadius: 25,
     }
 })
